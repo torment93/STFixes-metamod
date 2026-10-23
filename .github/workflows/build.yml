@@ -31,9 +31,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         include:
-          - os: windows-latest
           - os: ubuntu-latest
             container: registry.gitlab.steamos.cloud/steamrt/sniper/sdk
     steps:
@@ -43,6 +42,13 @@ jobs:
           path: stfixes-metamod
           submodules: recursive
           fetch-depth: 0
+
+      - name: Patch IVEngineServer2 for CS2 1.41.9.2
+        shell: bash
+        run: |
+          # CS2 1.41.9.2 añade un virtual a IVEngineServer2 (alliedmodders/hl2sdk#438)
+          python3 stfixes-metamod/.github/patch_eiface.py stfixes-metamod/sdk/public/eiface.h
+          grep -n -A1 MakeSpawnGroupActive stfixes-metamod/sdk/public/eiface.h
 
       - name: Checkout Metamod
         uses: actions/checkout@v4
